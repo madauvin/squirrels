@@ -3,6 +3,8 @@
 
 # squirrels
 
+Hola! bienvenue sur la page!
+
 ![](images/squirrels_hex-02.png)
 
 The goal of squirrels is to help you conduct studies on Central Park
@@ -26,7 +28,7 @@ This is a basic example which shows you how to solve a common problem:
 library(squirrels)
 ## basic example code
 get_df_nrows(iris)
-#> Le nombre de lignes est 150
+#> The dataset is composed of 150 rows
 #> [1] 150
 ```
 
