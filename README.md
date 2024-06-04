@@ -3,7 +3,8 @@
 
 # squirrels
 
-Hola! bienvenue sur la page!
+Hola! bienvenue sur la page! Ce package a été créé dans le cadre d’une
+formation N2
 
 ![](images/squirrels_hex-02.png)
 
