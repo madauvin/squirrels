@@ -1,0 +1,4 @@
+"type","path","origin"
+"R","R/squirrels-package.R","No existing source path found."
+"R","R/utils-pipe.R","No existing source path found."
+"test","tests/testthat/test-my_fun.R","Possibly deprecated file. Please check its link with detected flat source: dev/flat_check_data.Rmd"
