@@ -1,0 +1,87 @@
+---
+title: "flat_export_results.Rmd empty"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r development, include=FALSE}
+library(testthat)
+library(tools)
+```
+
+```{r development-load}
+# Load already included functions if relevant
+pkgload::load_all(export_all = FALSE)
+```
+
+# Sauvegarder et exporter les résultats dans un document csv
+
+
+
+
+
+```{r dev}
+
+df <- iris
+path<- "test"
+
+```
+
+```{r function-export_results}
+#' export_results Title
+#'
+#' @param df dataframe
+#' @param path le chemin où enregistrer mon df
+#'
+#' @return le chemin d'enregistrement
+#' @export
+#' @importFrom utils write.csv2
+#' @importFrom tools file_ext
+#' @examples
+
+save_as_csv <- function(df, mypath ) {
+mon_dossier_temp <- tempfile(pattern = "saveascsv")
+dir.create(mon_dossier_temp)
+mypath <- file.path(mon_dossier_temp, "output.csv")
+
+if(isFALSE(is.data.frame(df))){
+  stop("df is not a data frame")
+}
+if(isTRUE(nrow(df) == 0 )){
+  stop("df is an empty dataframe")
+}
+if(isFALSE(file_ext(mypath) == "csv" )){
+  stop("mypath must be a csv")
+}
+
+if(isFALSE(dir.exists(dirname(mypath)))){
+  stop("my path does not exists")
+}
+
+ write.csv2(x=df, file=mypath) 
+ message("Finish: writing") 
+ return(mypath)
+}
+```
+
+```{r examples-export_results}
+export_results()
+```
+
+```{r tests-export_results}
+test_that("export_results works", {
+
+})
+```
+
+
+```{r development-inflate, eval=FALSE}
+# Run but keep eval=FALSE to avoid infinite loop
+# Execute in the console directly
+fusen::inflate(
+  flat_file = "dev/flat_export_results.Rmd",
+  vignette_name = "Exporter les résultats"
+)
+```
+
