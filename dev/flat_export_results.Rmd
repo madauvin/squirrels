@@ -8,6 +8,7 @@ editor_options:
 ```{r development, include=FALSE}
 library(testthat)
 library(tools)
+library(utils)
 ```
 
 ```{r development-load}
@@ -29,50 +30,70 @@ path<- "test"
 ```
 
 ```{r function-export_results}
-#' export_results Title
+#' export  file
 #'
-#' @param df dataframe
-#' @param path le chemin où enregistrer mon df
-#'
-#' @return le chemin d'enregistrement
-#' @export
+#' save as CSV
+#' @param df 
+#' @param mypath le chemin où enregistrer mon df
+#' @param ... 
 #' @importFrom utils write.csv2
 #' @importFrom tools file_ext
+#' @return le chemin d'enregistrement
+#' @export
+#'
 #' @examples
+save_as_csv <- function(df, mypath, ...) {
+  # Créer un dossier temporaire pour le fichier CSV
+  mon_dossier_temp <- tempfile(pattern = "saveascsv")
+  dir.create(mon_dossier_temp)
+  mypath <- file.path(mon_dossier_temp, "output.csv")
 
-save_as_csv <- function(df, mypath ) {
-mon_dossier_temp <- tempfile(pattern = "saveascsv")
-dir.create(mon_dossier_temp)
-mypath <- file.path(mon_dossier_temp, "output.csv")
+  # Vérifier si df est un data frame
+  if (!is.data.frame(df)) {
+    stop("df is not a data frame")
+  }
 
-if(isFALSE(is.data.frame(df))){
-  stop("df is not a data frame")
-}
-if(isTRUE(nrow(df) == 0 )){
-  stop("df is an empty dataframe")
-}
-if(isFALSE(file_ext(mypath) == "csv" )){
-  stop("mypath must be a csv")
+  # Vérifier si df est vide
+  if (nrow(df) == 0) {
+    stop("df is an empty dataframe")
+  }
+
+  # Vérifier si mypath est un fichier CSV
+  if (file_ext(mypath) != "csv") {
+    stop("mypath must be a csv")
+  }
+
+  # Vérifier si le dossier de mypath existe
+  if (!dir.exists(dirname(mypath))) {
+    stop("my path does not exist")
+  }
+  write.csv2(x = df, file = mypath, ...)
+
+  message("Finish: writing")
+  return(mypath)
 }
 
-if(isFALSE(dir.exists(dirname(mypath)))){
-  stop("my path does not exists")
-}
-
- write.csv2(x=df, file=mypath) 
- message("Finish: writing") 
- return(mypath)
-}
 ```
 
 ```{r examples-export_results}
-export_results()
+df <- data.frame(a = 1:5, b = letters[1:5])
+
+mypath <- save_as_csv(df, "output.csv", sep = ";", dec = ",", row.names = FALSE)
+
+print(mypath)
 ```
 
 ```{r tests-export_results}
-test_that("export_results works", {
-
+test_that("save_as_csv works", {
+  expect_true(inherits(save_as_csv, "function")) 
+  
+  
+mon_dossier_temp <- tempfile(pattern = "saveascsv")
+dir.create(mon_dossier_temp)
+mypath <- file.path(mon_dossier_temp, "output.csv")
+  
 })
+
 ```
 
 
