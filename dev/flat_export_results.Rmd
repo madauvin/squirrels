@@ -24,8 +24,41 @@ pkgload::load_all(export_all = FALSE)
 
 ```{r dev}
 
+
 df <- iris
-path<- "test"
+path <- "mondossier"
+
+mon_dossier_temp <- tempfile(pattern = "saveascsv")
+dir.create(mon_dossier_temp)
+mypath <- file.path(mon_dossier_temp, "output.csv")
+
+
+rstudioapi::filesPaneNavigate(mon_dossier_temp)
+
+
+
+
+
+if (isFALSE(is.data.frame(df))) {
+  stop("df is not a data frame")
+}
+
+if (isTRUE(nrow(df) == 0)) {
+  stop("df has an empty dataframe")
+}
+
+if (isFALSE(file.ext(mypath) == "csv" )){
+  stop("mypath must be a csv")
+}
+
+if (isFALSE(dir.exists(dirname(mypath)))){
+  stop("mypath does not exist")
+}
+
+write.csv2(x = df, file = mypath)
+
+mypath
+
 
 ```
 
@@ -76,11 +109,15 @@ save_as_csv <- function(df, mypath, ...) {
 ```
 
 ```{r examples-export_results}
-df <- data.frame(a = 1:5, b = letters[1:5])
 
-mypath <- save_as_csv(df, "output.csv", sep = ";", dec = ",", row.names = FALSE)
+path <- "mondossier"
 
-print(mypath)
+mon_dossier_temp <- tempfile(pattern = "saveascsv")
+dir.create(mon_dossier_temp)
+mypath <- file.path(mon_dossier_temp, "output.csv")
+
+save_as_csv(df = iris, mypath = mypath)
+unlink(mypath)
 ```
 
 ```{r tests-export_results}
