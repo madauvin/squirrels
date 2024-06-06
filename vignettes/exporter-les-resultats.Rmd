@@ -23,6 +23,14 @@ library(squirrels)
 # Sauvegarder et exporter les résultats dans un document csv
 
 ```{r examples-export_results}
-export_results()
+
+path <- "mondossier"
+
+mon_dossier_temp <- tempfile(pattern = "saveascsv")
+dir.create(mon_dossier_temp)
+mypath <- file.path(mon_dossier_temp, "output.csv")
+
+save_as_csv(df = iris, mypath = mypath)
+unlink(mypath)
 ```
 

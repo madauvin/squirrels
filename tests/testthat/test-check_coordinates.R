@@ -41,15 +41,3 @@ test_that("check_coordinates works with an error", {
               ), regexp = "latitude and longitude should be numeric")
   
 })
-
-test_that("check_presence_of_required_columns works", {
-  expect_true(inherits(check_presence_of_required_columns, "function")) 
-})
-
-test_that("j'ai un message d'erreur quand il le faut", {
-  expect_error(check_presence_of_required_columns(data_not_ok), "Missing column : primary_fur_color, lat, long")
-})
-
-test_that("j'ai les bonnes colonnes", {
-  expect_true(check_presence_of_required_columns(data_demo_squirrels))
-})

@@ -155,84 +155,78 @@ test_that("check_coordinates works with an error", {
   
 })
 ```
-  
-  # check_presence_of_required_columns
+
+
+
+```{r, development}
+data <- data_demo_squirrels
+
+required_columns <- all(c("primary_fur_color", "lat", "long") %in% names(data))
+
+if (isFALSE(required_columns)) {
+  stop("Columns are missing")
+} 
+
+required_columns
+
+```
+
+# check_presence_of_required_columns
     
 ```{r function-check_presence_of_required_columns}
-#' check the presence of required columns
-#' 
-#' Vérifie que le jeu de données continet bien les colonnes requises pour l'étude des écureuils de Central Park
-#' @param data data.frame portant sur les ecureuils
+#' Verify if the required columns are present in the dataset
+#'
+#' long, lat and primary_fur_color are required
+#'
+#' @param data Data frame. A dataset with squirrels data.
+#'
 #' @return logical
 #' 
 #' @export
-check_presence_of_required_columns <- function(dataframe){
-   data <- dataframe 
-   expected_names <- c("primary_fur_color", "lat","long")
-   check_names <- all(expected_names %in% names(data))
+check_presence_of_required_columns <- function(data){
+    
+  required_columns <-
+    all(c("primary_fur_color", "lat", "long") %in% names(data))
   
-  if (isFALSE(check_names)){
-  stop("Missing column : primary_fur_color, lat, long")}
-   
-    return(check_names)
+  if (isFALSE(required_columns)) {
+    stop("Columns are missing")
+  }
+  
+  return(required_columns)
+  
+  
 }
-
-
 ```
   
 ```{r example-check_presence_of_required_columns}
-data_is_ok <- data_demo_squirrels
-check_presence_of_required_columns(data_is_ok)
-data_not_ok <- iris
-check_presence_of_required_columns(data_not_ok)
+check_presence_of_required_columns(data = data_demo_squirrels)
 ```
   
 ```{r tests-check_presence_of_required_columns}
 test_that("check_presence_of_required_columns works", {
   expect_true(inherits(check_presence_of_required_columns, "function")) 
-})
-
-test_that("j'ai un message d'erreur quand il le faut", {
-  expect_error(check_presence_of_required_columns(data_not_ok), "Missing column : primary_fur_color, lat, long")
-})
-
-test_that("j'ai les bonnes colonnes", {
-  expect_true(check_presence_of_required_columns(data_demo_squirrels))
+  
+  
+  expect_true(
+    check_presence_of_required_columns(data = data_demo_squirrels)
+    )
+  
+  expect_error(check_presence_of_required_columns(data = iris), 
+               regexp = "Columns are missing")
 })
 ```
   
 
-```{r development-inflate, eval=FALSE}
-# Run but keep eval=FALSE to avoid infinite loop
-# Execute in the console directly
-fusen::inflate(flat_file = "dev/flat_check_data.Rmd", vignette_name = "Check data", open_vignette = FALSE, overwrite = TRUE)
-```
+```{r, development}
 
+data <- data_demo_squirrels
 
-# filter_squirrels_data_based_on_integrity
-    
-```{r function-filter_squirrels_data_based_on_integrity}
-#' filter_squirrels_data_based_on_integrity
-#' 
-#' s'assure que les données vérifient toutes les conditions pour etre utilisée par l'utilisateur final du package et retourne un dataframe en fonction de son intégrité
-#' 
-#' @return df_valid_data dataframe, données pouvant etre utlilisées
-#' @return df_invalid_data dataframe, données ne pouvant PAS etre utlilisées
-#' @return df_missing_data  dataframe, données dont on ne peut vérifier l'intégrité.
-#' @importFrom 
-#' @param dataframe, dataframe         
-#' @export
+check_columns <- check_presence_of_required_columns(data = data)
 
-filter_squirrels_data_based_on_integrity <- function(data) {
+colors_are_ok <- check_plus_in_primary_fur_color(primary_fur_color = data$primary_fur_color)
 
-check_columns <-  check_presence_of_required_columns(dataframe = data)
-  
- coordinates_are_ok <-  check_coordinates(
-   latitude = data$lat, 
-   longitude = data$long)
-  
-colors_are_ok <-   check_plus_in_primary_fur_color(primary_fur_color =  data$primary_fur_color)
-  
+coordinates_are_ok <- check_coordinates(latitude = data$lat, longitude = data$long)
+
 
 data_with_type <- data |>
     mutate(type = case_when(
@@ -246,31 +240,106 @@ valid_data <- data_with_type |>
 invalid_data <- data_with_type |>
     filter(type == "invalid")
 missing_data <- data_with_type |>
-    filter(type == "missing")  
+    filter(type == "missing")
 
-list(
-  df_valid_data <- valid_data,
-    df_invalid_data <- invalid_data,
-    df_missing_data <- missing_data
-    )
-}
+
+list(df_valid_data = valid_data, 
+     df_invalid_data = invalid_data,
+     df_missing_data = missing_data)
+
+```
+
+# filter_squirrels_data_based_on_integrity
+    
+```{r function-filter_squirrels_data_based_on_integrity}
+#' Filter the data based on the quality of the primary fur color and the coordinates
+#'
+#' 
+#' @param data Data frame. A dataset with squirrels data.
+#' @importFrom dplyr mutate case_when filter
+#'
+#' @return a list with valid, invalid, missing data
+#' 
+#' @export
+filter_squirrels_data_based_on_integrity <- function(data){
+    
   
+  check_columns <- check_presence_of_required_columns(data = data)
+  
+  colors_are_ok <-
+    check_plus_in_primary_fur_color(primary_fur_color = data$primary_fur_color)
+  
+  coordinates_are_ok <-
+    check_coordinates(latitude = data$lat, longitude = data$long)
+  
+  
+  data_with_type <- data |>
+    mutate(
+      type = case_when(
+        is.na(colors_are_ok) | is.na(coordinates_are_ok) ~ "missing",
+        colors_are_ok & coordinates_are_ok ~ "valid",
+        !colors_are_ok | !coordinates_are_ok ~ "invalid"
+      )
+    )
+  
+  valid_data <- data_with_type |>
+    filter(type == "valid")
+  invalid_data <- data_with_type |>
+    filter(type == "invalid")
+  missing_data <- data_with_type |>
+    filter(type == "missing")
+  
+  
+  list(
+    df_valid_data = valid_data,
+    df_invalid_data = invalid_data,
+    df_missing_data = missing_data
+  )
+  
+  
+}
 ```
   
 ```{r example-filter_squirrels_data_based_on_integrity}
-filter_squirrels_data_based_on_integrity()
+filter_squirrels_data_based_on_integrity(data = data_demo_squirrels)
+
+
+my_data <- readr::read_csv(system.file("nyc_squirrels_sample.csv", package = "squirrels"))
+filter_squirrels_data_based_on_integrity(data = my_data)
+
 ```
   
 ```{r tests-filter_squirrels_data_based_on_integrity}
 test_that("filter_squirrels_data_based_on_integrity works", {
-  expect_true(
-    inherits(filter_squirrels_data_based_on_integrity, "function")) })
-  
+  expect_true(inherits(filter_squirrels_data_based_on_integrity, "function"))
+ 
   my_data <- readr::read_csv(system.file("nyc_squirrels_sample.csv", package = "squirrels"))
   
-  data_integrity <- filter_squirrels_data_based_on_integrity(data=my_data)
-  expect_equal(nrow(data_integrity$df_valid_data), 393)
-
-
+  
+  data_integrity <- filter_squirrels_data_based_on_integrity(data = my_data)
+  
+  expect_equal(
+    nrow(data_integrity$df_valid_data),
+    393
+  )
+  
+  expect_equal(
+    nrow(data_integrity$df_invalid_data),
+    0
+  )
+  
+  expect_equal(
+    nrow(data_integrity$df_missing_data),
+    7
+  )
+})
 ```
   
+
+
+```{r development-inflate, eval=FALSE}
+# Run but keep eval=FALSE to avoid infinite loop
+# Execute in the console directly
+fusen::inflate(flat_file = "dev/flat_check_data.Rmd", vignette_name = "Check data", open_vignette = FALSE, overwrite = TRUE)
+```
+
