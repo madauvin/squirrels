@@ -2,21 +2,31 @@
 % Please edit documentation in R/save_as_csv.R
 \name{save_as_csv}
 \alias{save_as_csv}
-\title{export_results Title}
+\title{Save an output as a csv file}
 \usage{
-save_as_csv(df, mypath)
+save_as_csv(df, mypath, ...)
 }
 \arguments{
-\item{df}{dataframe}
+\item{df}{Data frame. The table to be saved as a csv file.}
 
-\item{path}{le chemin où enregistrer mon df}
+\item{mypath}{Character. Path where the csv file should be saved.}
+
+\item{...}{parameters of 'write.csv2()'}
 }
 \value{
-le chemin d'enregistrement
+The path to the created csv file.
 }
 \description{
-export_results Title
+Save an output as a csv file
 }
 \examples{
-export_results()
+
+path <- "mondossier"
+
+mon_dossier_temp <- tempfile(pattern = "saveascsv")
+dir.create(mon_dossier_temp)
+mypath <- file.path(mon_dossier_temp, "output.csv")
+
+save_as_csv(df = iris, mypath = mypath)
+unlink(mypath)
 }
