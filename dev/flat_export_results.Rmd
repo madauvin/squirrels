@@ -8,6 +8,7 @@ editor_options:
 ```{r development, include=FALSE}
 library(testthat)
 library(tools)
+library(tidyverse)
 ```
 
 ```{r development-load}
@@ -15,73 +16,152 @@ library(tools)
 pkgload::load_all(export_all = FALSE)
 ```
 
-# Sauvegarder et exporter les résultats dans un document csv
 
+# save_as_csv
 
-
-
-
-```{r dev}
-
+```{r development}
 df <- iris
-path<- "test"
+path <- "mondossier"
 
-```
-
-```{r function-export_results}
-#' export_results Title
-#'
-#' @param df dataframe
-#' @param path le chemin où enregistrer mon df
-#'
-#' @return le chemin d'enregistrement
-#' @export
-#' @importFrom utils write.csv2
-#' @importFrom tools file_ext
-#' @examples
-
-save_as_csv <- function(df, mypath ) {
 mon_dossier_temp <- tempfile(pattern = "saveascsv")
 dir.create(mon_dossier_temp)
 mypath <- file.path(mon_dossier_temp, "output.csv")
 
-if(isFALSE(is.data.frame(df))){
+
+rstudioapi::filesPaneNavigate(mon_dossier_temp)
+
+
+
+
+
+if (isFALSE(is.data.frame(df))) {
   stop("df is not a data frame")
 }
-if(isTRUE(nrow(df) == 0 )){
-  stop("df is an empty dataframe")
+
+if (isTRUE(nrow(df) == 0)) {
+  stop("df has an empty dataframe")
 }
-if(isFALSE(file_ext(mypath) == "csv" )){
+
+if (isFALSE(file_ext(mypath) == "csv" )){
   stop("mypath must be a csv")
 }
 
-if(isFALSE(dir.exists(dirname(mypath)))){
-  stop("my path does not exists")
+if (isFALSE(dir.exists(dirname(mypath)))){
+  stop("mypath does not exist")
 }
 
- write.csv2(x=df, file=mypath) 
- message("Finish: writing") 
- return(mypath)
+write.csv2(x = df, file = mypath)
+
+mypath
+
+
+```
+
+
+    
+```{r function-save_as_csv}
+#' Save an output as a csv file
+#'
+#' @param df Data frame. The table to be saved as a csv file.
+#' @param mypath Character. Path where the csv file should be saved.
+#' @param ... parameters of 'write.csv2()'
+#' @importFrom tools file_ext
+#' @importFrom utils write.csv2
+#'
+#' @return The path to the created csv file.
+#' @export
+#'
+#' @examples
+
+save_as_csv <- function(df, mypath,...){
+    
+  
+if (isFALSE(is.data.frame(df))) {
+  stop("df is not a data frame")
 }
-```
 
-```{r examples-export_results}
-export_results()
-```
+if (isTRUE(nrow(df) == 0)) {
+  stop("df has an empty dataframe")
+}
 
-```{r tests-export_results}
-test_that("export_results works", {
+if (isFALSE(file_ext(mypath) == "csv" )){
+  stop("mypath must be a csv")
+}
+
+if (isFALSE(dir.exists(dirname(mypath)))){
+  stop("mypath does not exist")
+}
+
+write.csv2(x = df, file = mypath,...)
+message("Finish : Writing")
+return(mypath)
+  
+}
+
+```
+  
+```{r example-save_as_csv}
+
+path <- "mondossier"
+
+mon_dossier_temp <- tempfile(pattern = "saveascsv")
+dir.create(mon_dossier_temp)
+mypath <- file.path(mon_dossier_temp, "output.csv")
+
+save_as_csv(df = iris, mypath = mypath, row.names = FALSE)
+unlink(mypath)
+```
+  
+```{r tests-save_as_csv}
+
+mon_dossier_temp <- tempfile(pattern = "saveascsv")
+dir.create(mon_dossier_temp)
+mypath <- file.path(mon_dossier_temp, "output.csv")
+  
+
+test_that("save_as_csv works", {
+  expect_true(inherits(save_as_csv, "function")) 
+  
+  path <- iris |> save_as_csv(mypath)
+
+  expect_true(
+    file.exists(path)
+  )
+
+})
+
+test_that("save_as_csv return Error", {
+  
+# erreur : l'extension du fichier à créer n'est pas la bonne
+expect_error(
+  iris |> save_as_csv(file.path(mon_dossier_temp, "output.xlsx")),
+  "mypath must be a csv")
+
+# erreur : la fonction n'est pas appliquée à un data.frame
+expect_error(
+  NULL |> save_as_csv(file.path(mon_dossier_temp, "output.csv")),
+  "df is not a data frame")
+
+# erreur : le chemin où doit être enregistré le fichier n'existe pas
+expect_error(
+  iris |> save_as_csv(file.path(mon_dossier_temp, "nexiste/pas/output.csv")),
+  "mypath does not exist")
+  
+# jeu de données vide
+  expect_error(
+    data.frame() |> save_as_csv(file.path(mon_dossier_temp, "output.csv")),
+    "df has an empty dataframe"
+  )
 
 })
 ```
+  
+
 
 
 ```{r development-inflate, eval=FALSE}
 # Run but keep eval=FALSE to avoid infinite loop
 # Execute in the console directly
-fusen::inflate(
-  flat_file = "dev/flat_export_results.Rmd",
-  vignette_name = "Exporter les résultats"
-)
+fusen::inflate(flat_file = "dev/flat_export_results.Rmd", vignette_name = "exporter les resultats", open_vignette = FALSE, overwrite = TRUE)
 ```
 

@@ -1,5 +1,5 @@
 ---
-title: "Check data"
+title: "check data"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{check-data}
@@ -68,20 +68,39 @@ check_coordinates(
   
 
   
-  # check_presence_of_required_columns
+
+# check_presence_of_required_columns
+data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAbElEQVR4Xs2RQQrAMAgEfZgf7W9LAguybljJpR3wEse5JOL3ZObDb4x1loDhHbBOFU6i2Ddnw2KNiXcdAXygJlwE8OFVBHDgKrLgSInN4WMe9iXiqIVsTMjH7z/GhNTEibOxQswcYIWYOR/zAjBJfiXh3jZ6AAAAAElFTkSuQmCC
     
 
   
 
 ```{r example-check_presence_of_required_columns}
-data_is_ok <- data_demo_squirrels
-check_presence_of_required_columns(data_is_ok)
-data_not_ok <- iris
-check_presence_of_required_columns(data_not_ok)
+data <- data_demo_squirrels
+check_presence_of_required_columns(data)
+
 ```
 
   
 
   
 
+
+# filter_squirrels_data_based_on_integrity
+
+  
+
+```{r example-filter_squirrels_data_based_on_integrity}
+filter_squirrels_data_based_on_integrity(data = data_demo_squirrels)
+
+
+my_data <- readr::read_csv(system.file("nyc_squirrels_sample.csv", package = "squirrels"))
+filter_squirrels_data_based_on_integrity(data = my_data)
+```
+
+  
+
+# inflate
+
+  
 

@@ -40,28 +40,3 @@ check_coordinates <- function(latitude, longitude) {
 
   return(coordinates_are_ok)
 }
-
-#' check the presence of required columns
-#' 
-#' Vérifie que le jeu de données continet bien les colonnes requises pour l'étude des écureuils de Central Park
-#' 
-#' @return
-#' 
-#' @export
-#' @examples
-#' data_is_ok <- data_demo_squirrels
-#' check_presence_of_required_columns(data_is_ok)
-#' data_not_ok <- iris
-#' check_presence_of_required_columns(data_not_ok)
-check_presence_of_required_columns <- function(dataframe){
-   data <- dataframe 
-   expected_names <- c("primary_fur_color", "lat","long")
-   check_names <- all(expected_names %in% names(data))
-  
-  if (isFALSE(check_names)){
-  stop("Missing column : primary_fur_color, lat, long")}
-   
-    return(check_names)
-}
-
-

@@ -104,7 +104,7 @@ test_that("get_df_nrows works", {
 # Run but keep eval=FALSE to avoid infinite loop
 # Execute in the console directly
 fusen::inflate(flat_file = "dev/flat_get_info.Rmd", 
-               vignette_name = "Get info about the dataset", 
+               vignette_name = "get info about the dataset", 
                overwrite = TRUE, 
                open_vignette = FALSE)
 ```
