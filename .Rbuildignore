@@ -8,3 +8,6 @@
 ^README\.Rmd$
 ^CODE_OF_CONDUCT\.md$
 ^data-raw$
+^README.Rmd
+^README\.Rmd$
+^README-.*\.png$
